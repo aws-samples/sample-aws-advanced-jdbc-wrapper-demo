@@ -1,0 +1,78 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "STSPermissions",
+      "Effect": "Allow",
+      "Action": [
+        "sts:GetCallerIdentity"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "EC2ReadOnlyPermissions",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeVpcs",
+        "ec2:DescribeSecurityGroups"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "RDSReadOnlyPermissions",
+      "Effect": "Allow",
+      "Action": [
+        "rds:DescribeDBClusters",
+        "rds:DescribeDBInstances",
+        "rds:DescribeDBSubnetGroups"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "RDSCreatePermissions",
+      "Effect": "Allow",
+      "Action": [
+        "rds:CreateDBCluster",
+        "rds:CreateDBInstance",
+        "rds:AddTagsToResource"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestTag/Project": "AWS-JDBC-Driver-Demo",
+          "aws:RequestTag/AutoDelete": "true"
+        }
+      }
+    },
+    {
+      "Sid": "RDSDeletePermissionsTaggedOnly",
+      "Effect": "Allow",
+      "Action": [
+        "rds:DeleteDBCluster",
+        "rds:DeleteDBInstance"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/Project": "AWS-JDBC-Driver-Demo",
+          "aws:ResourceTag/AutoDelete": "true"
+        }
+      }
+    },
+    {
+      "Sid": "RDSTaggingPermissions",
+      "Effect": "Allow",
+      "Action": [
+        "rds:ListTagsForResource",
+        "rds:AddTagsToResource",
+        "rds:RemoveTagsFromResource"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/Project": "AWS-JDBC-Driver-Demo"
+        }
+      }
+    }
+  ]
+}

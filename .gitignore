@@ -1,0 +1,14 @@
+.gradle/
+build/
+.idea/
+*.iml
+.env
+bin/
+.settings/
+.project
+.classpath
+.vscode/
+application.properties
+.gradle/
+*.bak
+build/
