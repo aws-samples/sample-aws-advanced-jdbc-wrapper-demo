@@ -481,8 +481,4 @@ BUILD SUCCESSFUL in 3s
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
-**Transform your Java application from standard JDBC to cloud-native AWS JDBC Driver capabilities with minimal code changes and maximum performance benefits! The adoption process is so simple - you'll wonder why you didn't do it sooner!** 🚀
+This project is licensed under the MIT-0 License. See the LICENSE file.
