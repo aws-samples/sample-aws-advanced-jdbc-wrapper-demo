@@ -1,18 +1,18 @@
 # AWS JDBC Driver Demo: Order Management System
 
 ## Purpose
-**The purpose of this repository is to help developers learn how to leverage the powerful features of [AWS JDBC Driver](https://github.com/aws/aws-advanced-jdbc-wrapper) in their existing enterprise Java applications.** 
+
+**The purpose of this repository is to help developers learn how to leverage the powerful features of [AWS JDBC Driver](https://github.com/aws/aws-advanced-jdbc-wrapper) in their existing enterprise Java applications.**
 
 We aim to provide step-by-step instructions through our real-world order management system demo, where developers will learn how to:
 
 - **Configure Gradle project** to use AWS JDBC Driver
 - **Implement fast failover** for improved Aurora reliability
 - **Enable read/write splitting** for optimal performance
-- **Integrate with AWS services** like IAM authentication and Secrets Manager *(Coming in future releases)*
-- **Integrate with ADFS and Okta** for federated authentication *(Coming in future releases)*
+- **Integrate with AWS services** like IAM authentication and Secrets Manager _(Coming in future releases)_
+- **Integrate with ADFS and Okta** for federated authentication _(Coming in future releases)_
 
 This repository contains sample code that simulates a real-world order management system powering an online store using Amazon Aurora databases.
-
 
 ## The Challenge
 
@@ -24,30 +24,34 @@ The AWS JDBC Driver bridges this gap, making it effortless for developers to unl
 
 ## The Solution: AWS JDBC Driver
 
-The [AWS JDBC Driver](https://github.com/aws/aws-advanced-jdbc-wrapper) is an intelligent wrapper that enhances your existing JDBC driver with Aurora and AWS cloud-native capabilities. Think of it as a smart software layer that transforms your standard PostgreSQL, MySQL, or MariaDB driver into a cloud-aware, production-ready solution.  
-
+The [AWS JDBC Driver](https://github.com/aws/aws-advanced-jdbc-wrapper) is an intelligent wrapper that enhances your existing JDBC driver with Aurora and AWS cloud-native capabilities. Think of it as a smart software layer that transforms your standard PostgreSQL, MySQL, or MariaDB driver into a cloud-aware, production-ready solution.
 
 **🚀 Fast Failover (Beyond DNS Limitations)**
+
 - Maintains a real-time cache of Aurora cluster topology
 - Bypasses DNS delays entirely
 - Enables immediate connections to the new primary during failover
 
 **🔐 Seamless AWS Authentication**
+
 - Automatically handles entire IAM authentication lifecycle
 - No custom token management code required
 - Simply configure IAM user and region
 
 **🔑 Native AWS Secrets Manager Support**
+
 - Automatic credential retrieval
 - Your application never sees actual passwords
 - Handles everything behind the scenes
 
 **⚡ Read/Write Splitting via Connection Control**
+
 - Automatically routes writes to the primary instance
-- Distributes reads across Aurora replicas where read-only configuration specified. 
+- Distributes reads across Aurora replicas where read-only configuration specified.
 - Maximizes Aurora performance with simple configuration
 
 **🏢 Federated Authentication with Microsoft ADFS**
+
 - Enable database access using organizational credentials
 - Automatic token management and role assumption
 - Secure database access through AWS IAM roles
@@ -55,13 +59,14 @@ The [AWS JDBC Driver](https://github.com/aws/aws-advanced-jdbc-wrapper) is an in
 ## Getting Started
 
 ### Prerequisites
+
 - AWS account with IAM permissions listed in [iam-policy.json](iam-policy.json)
 - A VPC, DB subnet group, and security group with port 5432 (PostgreSQL) open ([see detailed setup guide](SETUP_AURORA_REFERENCE.md))
 - AWS CLI configured (or create databases using the console)
 - Java 21+ and Gradle installed
 
-
 ### Application Overview
+
 **What You're Working With:**
 A Java order management system using HikariCP connection pooling and standard PostgreSQL JDBC driver - a typical setup most developers recognize.
 
@@ -69,10 +74,12 @@ A Java order management system using HikariCP connection pooling and standard Po
 Our demo application simulates a real-world order management system powering an online store where customers place orders, staff update order statuses, and managers generate sales reports. This scenario demonstrates the challenge of mixed database workloads - some operations need immediate consistency (like processing payments), while others can tolerate slight delays (like generating sales reports).
 
 **Workload Types:**
+
 - Write-heavy operations (orders, status updates) requiring immediate consistency
 - Read-heavy operations (reporting, history lookups) that can use read replicas
 
 **Technical Implementation:**
+
 - **HikariCP connection pooling** with the standard PostgreSQL JDBC driver
 - **Gradual transformation** to AWS JDBC Driver capabilities
 - **Real-world code patterns** that most developers recognize
@@ -80,6 +87,7 @@ Our demo application simulates a real-world order management system powering an 
 - **Drop-in replacement** - no business logic modifications needed
 
 ### Repository Structure
+
 ```
 aws-jdbc-wrapper-demo/
 ├── src/main/java/com/example/
@@ -103,33 +111,38 @@ aws-jdbc-wrapper-demo/
 ```
 
 ### Quick Start
+
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/your-username/aws-jdbc-wrapper-demo.git
    cd aws-jdbc-wrapper-demo
    ```
 
 2. **Configure your environment**
+
    ```bash
    cp .env.example .env
    # Edit .env with your AWS resource values
    ```
-   
+
    **📚 For detailed AWS infrastructure setup instructions, see our [Aurora Setup Reference Guide](SETUP_AURORA_REFERENCE.md)**
 
 3. **Create Aurora cluster**
+
    ```bash
    ./setup-aurora.sh
    ```
 
 4. **Run the demo**
+
    ```bash
    # Step 1: Standard JDBC baseline
    ./demo.sh standard-jdbc
-   
+
    # Step 2: AWS JDBC Driver with failover
    ./demo.sh aws-jdbc-wrapper
-   
+
    # Step 3: Enable read/write splitting
    ./demo.sh read-write-splitting
    ```
@@ -144,6 +157,7 @@ aws-jdbc-wrapper-demo/
 ### Step 1: Set Up the Development Environment
 
 #### 1.1: Clone the demo repository
+
 ```bash
 git clone https://github.com/ramesheega/aws-jdbc-warpper-demo.git
 cd aws-jdbc-wrapper-demo
@@ -152,17 +166,20 @@ cd aws-jdbc-wrapper-demo
 ### Step 2: Deploy the Database Infrastructure
 
 #### 2.1: Configure Your AWS Environment Settings
+
 We'll create an Amazon Aurora cluster using an automated script. The script requires configuration through environment variables in a `.env` file. Please ensure you set all the required variables with your actual AWS resource values to successfully create the Amazon Aurora cluster.
 
 **📚 For detailed AWS infrastructure setup instructions, see our [Aurora Setup Reference Guide](SETUP_AURORA_REFERENCE.md)**
 
 **Create `.env` file with your configuration:**
+
 ```bash
 cp .env.example .env
 # Edit .env with your AWS resource values
 ```
 
 **Required environment variables:**
+
 ```bash
 # Aurora Cluster Configuration
 AURORA_CLUSTER_ID=aurora-jdbc-demo          # Unique identifier for your Aurora cluster
@@ -179,6 +196,7 @@ AWS_DB_SUBNET_GROUP_NAME=jdbc-private-subnets  # DB subnet group with subnets in
 ```
 
 #### 2.2: Create Your Aurora Cluster with two read replicas
+
 Run the script to create Aurora cluster. This will create two reader instances along the writer instance.
 
 ```bash
@@ -187,6 +205,7 @@ Run the script to create Aurora cluster. This will create two reader instances a
 ```
 
 **Expected output after successful creation:**
+
 ```
 📋 Connection Details:
 ==================================================
@@ -205,12 +224,15 @@ db.password=<Your DB password>
 ```
 
 ### Step 3: Establish Baseline
+
 Now let's run our application using the standard PostgreSQL JDBC driver to establish our baseline before we enhance it with AWS JDBC Driver capabilities.
 
 #### 3.1: Configure Application to use the database created
+
 Create the application configuration file to connect to your newly created Aurora cluster. You'll use the connection details that were displayed when the Aurora cluster was successfully created.
 
 **Create `src/main/resources/application.properties`:**
+
 ```properties
 db.url=jdbc:postgresql://aurora-jdbc-demo.cluster-abc123.us-east-1.rds.amazonaws.com:5432/postgres
 db.username=postgres
@@ -220,6 +242,7 @@ db.password=<Your DB password>
 **Note:** Please make sure you update the database password. The standard JDBC driver requires a password. In upcoming sections, we'll demonstrate how to eliminate this requirement using IAM Database Authentication or AWS Secrets Manager integration using AWS JDBC Driver.
 
 #### 3.2: Run the Application
+
 Execute the application to observe standard JDBC behavior:
 
 ```bash
@@ -227,6 +250,7 @@ Execute the application to observe standard JDBC behavior:
 ```
 
 **Expected Output:**
+
 ```
 Task :run
 INFO com.zaxxer.hikari.HikariDataSource - StandardPostgresPool - Starting...
@@ -234,13 +258,13 @@ INFO com.example.config.DatabaseConfig - Standard JDBC connection pool initializ
 
 === PERFORMING WRITE OPERATIONS ===
 INFO com.example.dao.OrderDAO - WRITE OPERATION: Creating new order for customer: John Doe
-INFO com.example.dao.OrderDAO - Connection URL: 
+INFO com.example.dao.OrderDAO - Connection URL:
     → WRITER: jdbc:postgresql://aurora-jdbc-demo.cluster-xxxxxxx.us-east-1.rds.amazonaws.com:5432/postgres
 INFO com.example.dao.OrderDAO - Order created with ID: 1
 
 === PERFORMING READ OPERATIONS ===
 INFO com.example.dao.OrderDAO - READ OPERATION: Getting order history
-INFO com.example.dao.OrderDAO - Connection URL: 
+INFO com.example.dao.OrderDAO - Connection URL:
     → WRITER: jdbc:postgresql://aurora-jdbc-demo.cluster-xxxxxxx.us-east-1.rds.amazonaws.com:5432/postgres
 INFO com.example.dao.OrderDAO - Found 4 orders
 INFO com.example.Application - Retrieved 4 total orders
@@ -251,9 +275,11 @@ BUILD SUCCESSFUL in 2s
 **Key Observation:** All operations (reads and writes) use the same Aurora writer endpoint, demonstrating standard JDBC behavior where everything hits the primary database.
 
 ### Step 4: Transform the application to use AWS JDBC Driver
+
 Now let's transform this application to use AWS JDBC Driver while maintaining the same functionality, adding cloud-native capabilities like fast failover.
 
 #### 4.1: Review the changes needed to use AWS JDBC Driver
+
 We will use a script to automatically apply the necessary changes. The script updates necessary changes to transform your standard JDBC application into a cloud-native application using AWS JDBC Driver.
 
 Before running the script, let's examine what changes are needed to understand how AWS JDBC Driver integration works:
@@ -261,19 +287,21 @@ Before running the script, let's examine what changes are needed to understand h
 **File 1: `build.gradle` - Add AWS JDBC Driver Dependency**
 
 **Current (Standard JDBC):**
+
 ```gradle
 dependencies {
     implementation 'com.zaxxer:HikariCP:5.0.1'
     implementation 'org.postgresql:postgresql:42.6.0'
     implementation 'ch.qos.logback:logback-classic:1.4.11'
     implementation 'org.slf4j:slf4j-api:2.0.9'
-    
+
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 ```
 
 **Required Change (AWS JDBC Driver):**
+
 ```gradle
 dependencies {
     implementation 'com.zaxxer:HikariCP:5.0.1'
@@ -281,7 +309,7 @@ dependencies {
     implementation 'software.amazon.jdbc:aws-advanced-jdbc-wrapper:2.5.6'  // ← Add this
     implementation 'ch.qos.logback:logback-classic:1.4.11'
     implementation 'org.slf4j:slf4j-api:2.0.9'
-    
+
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
@@ -292,6 +320,7 @@ dependencies {
 **File 2: `DatabaseConfig.java` - Update Connection Configuration**
 
 **Current (Standard JDBC Configuration):**
+
 ```java
 // Standard JDBC configuration
 configuredJdbcUrl = props.getProperty("db.url");
@@ -304,6 +333,7 @@ log.info("Standard JDBC connection pool initialized");
 ```
 
 **Required Change (AWS JDBC Driver Configuration):**
+
 ```java
 // AWS JDBC Driver configuration
 configuredJdbcUrl = props.getProperty("db.url");
@@ -326,11 +356,13 @@ log.info("AWS JDBC Driver connection pool initialized");
 **File 3: `application.properties` - Update JDBC URL**
 
 **Current (Standard JDBC):**
+
 ```properties
 db.url=jdbc:postgresql://aurora-jdbc-demo.cluster-abc123.us-east-1.rds.amazonaws.com:5432/postgres
 ```
 
 **Required Change (AWS JDBC Driver):**
+
 ```properties
 db.url=jdbc:aws-wrapper:postgresql://aurora-jdbc-demo.cluster-abc123.us-east-1.rds.amazonaws.com:5432/postgres
 ```
@@ -338,11 +370,13 @@ db.url=jdbc:aws-wrapper:postgresql://aurora-jdbc-demo.cluster-abc123.us-east-1.r
 **Purpose:** The `aws-wrapper:` prefix tells the driver to use AWS JDBC Driver capabilities instead of the standard PostgreSQL driver.
 
 #### 4.2: Run the script to apply the changes and then execute
+
 ```bash
 ./demo.sh aws-jdbc-wrapper
 ```
 
 **Expected Output:**
+
 ```
 Running application...
 > Task :run
@@ -353,13 +387,13 @@ Running application...
 
 === WRITE OPERATIONS ===
 16:22:19.661 [main] INFO com.example.dao.OrderDAO - WRITE OPERATION: Creating new order for customer: John Doe
-16:22:19.665 [main] INFO com.example.dao.OrderDAO - Connection URL: 
+16:22:19.665 [main] INFO com.example.dao.OrderDAO - Connection URL:
     → WRITER: jdbc:postgresql://aurora-jdbc-demo4.cluster-curzkcvul3uv.us-east-1.rds.amazonaws.com:5432/postgres
 16:22:19.684 [main] INFO com.example.dao.OrderDAO - Order created with ID: 13
 
 === READ OPERATIONS ===
 16:22:19.706 [main] INFO com.example.dao.OrderDAO - READ OPERATION: Getting order history
-16:22:19.708 [main] INFO com.example.dao.OrderDAO - Connection URL: 
+16:22:19.708 [main] INFO com.example.dao.OrderDAO - Connection URL:
     → WRITER: jdbc:postgresql://aurora-jdbc-demo4.cluster-curzkcvul3uv.us-east-1.rds.amazonaws.com:5432/postgres
 16:22:19.714 [main] INFO com.example.dao.OrderDAO - Found 16 orders
 ```
@@ -367,6 +401,7 @@ Running application...
 **Key Observation:** All operations still use the writer endpoint, but now your application has fast failover capability without any business logic changes.
 
 ### Step 5: Enable Read/Write Splitting
+
 Let's unlock the AWS JDBC Driver feature by enabling intelligent connection routing - writes go to the primary instance while reads distribute across Aurora replicas for optimal performance.
 
 #### 5.1: Review the changes needed to use Read/Write Splitting
@@ -374,21 +409,25 @@ Let's unlock the AWS JDBC Driver feature by enabling intelligent connection rout
 **File 1: `DatabaseConfig.java` – Add readWriteSplitting plugin**
 
 **Current:**
+
 ```java
 targetProps.setProperty("wrapperPlugins", "failover");
 ```
 
 **After:**
+
 ```java
 targetProps.setProperty("wrapperPlugins", "readWriteSplitting,failover");
 ```
 
 **File 2: `OrderDAO.java` Read Method Enhancement**
+
 ```java
 conn.setReadOnly(true);  // Enable read/write splitting for this connection
 ```
 
 #### 5.2: Run the script to apply the changes and then execute
+
 Run the read/write splitting configuration:
 
 ```bash
@@ -396,6 +435,7 @@ Run the read/write splitting configuration:
 ```
 
 **Expected Output:**
+
 ```
 Running application...
 > Task :run
@@ -404,18 +444,18 @@ Running application...
 
 === PERFORMING WRITE OPERATIONS ===
 16:51:19.434 [main] INFO com.example.dao.OrderDAO - WRITE OPERATION: Creating new order for customer: John Doe
-16:51:19.437 [main] INFO com.example.dao.OrderDAO - Connection URL: 
+16:51:19.437 [main] INFO com.example.dao.OrderDAO - Connection URL:
     → WRITER: jdbc:postgresql://aurora-jdbc-demo4.cluster-curzkcvul3uv.us-east-1.rds.amazonaws.com:5432/postgres
 16:51:19.456 [main] INFO com.example.dao.OrderDAO - Order created with ID: 17
 
 === PERFORMING READ OPERATIONS ===
 16:51:19.477 [main] INFO com.example.dao.OrderDAO - READ OPERATION: Getting order history
-16:51:20.044 [main] INFO com.example.dao.OrderDAO - Connection URL: 
+16:51:20.044 [main] INFO com.example.dao.OrderDAO - Connection URL:
     → READER: jdbc:postgresql://aurora-jdbc-reader-2.curzkcvul3uv.us-east-1.rds.amazonaws.com:5432/postgres
 16:51:20.051 [main] INFO com.example.dao.OrderDAO - Found 20 orders
 
 16:51:20.052 [main] INFO com.example.dao.OrderDAO - READ OPERATION: Generating sales report
-16:51:20.285 [main] INFO com.example.dao.OrderDAO - Connection URL: 
+16:51:20.285 [main] INFO com.example.dao.OrderDAO - Connection URL:
     → READER: jdbc:postgresql://aurora-jdbc-reader-2.curzkcvul3uv.us-east-1.rds.amazonaws.com:5432/postgres
 16:51:20.285 [main] INFO com.example.dao.OrderDAO - Sales report generated: {totalOrders=20, totalRevenue=8150.0}
 
@@ -423,37 +463,19 @@ BUILD SUCCESSFUL in 3s
 ```
 
 **Key Observation:** While the configured URL remains the same, the AWS JDBC Driver now intelligently routes:
+
 - **Write Operations** → Aurora writer endpoint (primary instance)
 - **Read Operations** → Aurora reader endpoints (replica instances)
 
 **Performance Benefits:**
+
 - Reduced writer load: Analytics queries no longer compete with transactions
 - Improved scalability: Read traffic distributes across multiple replicas
 - Better resource utilization: Each Aurora instance serves its optimal workload
 
-**No Application Logic Changes:** The same business code now automatically benefits from Aurora's distributed architecture through simple configuration changes.
-
-## Key Benefits Demonstrated
-
-✅ **Zero Application Logic Changes** - Same business code, enhanced capabilities  
-✅ **Immediate Failover Recovery** - No more DNS delays  
-✅ **Automatic Read/Write Routing** - Optimal Aurora resource utilization  
-✅ **Production-Ready Security** - IAM authentication and Secrets Manager integration  
-✅ **Minimal Configuration** - Simple property changes unlock powerful features  
-✅ **Easy Adoption** - Drop-in replacement with existing JDBC drivers
-
-## Contributing
-
-This repository is designed to help developers understand and adopt AWS JDBC Driver capabilities. Feel free to:
-
-- Submit issues for improvements
-- Contribute additional use cases
-- Share your implementation experiences
-- Suggest new features or demos
-
 ## Resources
 
-- [AWS JDBC Driver Documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.AuroraConnecting.html)
+- [AWS JDBC Driver Documentation](https://github.com/aws/aws-advanced-jdbc-wrapper)
 - [Amazon Aurora Best Practices](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.BestPractices.html)
 - [HikariCP Connection Pooling](https://github.com/brettwooldridge/HikariCP)
 
