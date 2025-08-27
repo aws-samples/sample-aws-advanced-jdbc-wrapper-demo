@@ -18,28 +18,21 @@ public class DatabaseConfig {
             Properties props = loadConfig();
             HikariConfig config = new HikariConfig();
             
-            // AWS JDBC Wrapper with Read/Write Splitting
-            config.setDataSourceClassName("software.amazon.jdbc.ds.AwsWrapperDataSource");
+            // Standard JDBC configuration
             configuredJdbcUrl = props.getProperty("db.url");
-            config.addDataSourceProperty("jdbcUrl", configuredJdbcUrl);
-            config.addDataSourceProperty("targetDataSourceClassName", "org.postgresql.ds.PGSimpleDataSource");
-            
-            Properties targetProps = new Properties();
-            targetProps.setProperty("user", props.getProperty("db.username"));
-            targetProps.setProperty("password", props.getProperty("db.password"));
-            targetProps.setProperty("wrapperPlugins", "readWriteSplitting,failover");
-            
-            config.addDataSourceProperty("targetDataSourceProperties", targetProps);
+            config.setJdbcUrl(configuredJdbcUrl);
+            config.setUsername(props.getProperty("db.username"));
+            config.setPassword(props.getProperty("db.password"));
             
             config.setMaximumPoolSize(5);
             config.setMinimumIdle(2);
             config.setIdleTimeout(300000);
             config.setConnectionTimeout(20000);
-            config.setPoolName("AWSJDBCReadWritePool");
+            config.setPoolName("StandardPostgresPool");
             
             dataSource = new HikariDataSource(config);
             
-            log.info("AWS JDBC Wrapper with Read/Write Splitting initialized");
+            log.info("Standard JDBC connection pool initialized");
         } catch (IOException e) {
             log.error("Failed to initialize database connection pool", e);
             throw new RuntimeException(e);

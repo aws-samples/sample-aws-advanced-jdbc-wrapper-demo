@@ -63,7 +63,7 @@ The [AWS JDBC Driver](https://github.com/aws/aws-advanced-jdbc-wrapper) is an in
 - AWS account with IAM permissions listed in [iam-policy.json](iam-policy.json)
 - A VPC, DB subnet group, and security group with port 5432 (PostgreSQL) open ([see detailed setup guide](SETUP_AURORA_REFERENCE.md))
 - AWS CLI configured (or create databases using the console)
-- Java 21+ and Gradle installed
+- Java 8+ and Gradle installed
 
 ### Application Overview
 

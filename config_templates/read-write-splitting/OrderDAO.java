@@ -14,21 +14,20 @@ import java.util.Map;
 public class OrderDAO {
 
     public void createTable() {
-        String sql = """
-            CREATE TABLE IF NOT EXISTS orders (
-                id SERIAL PRIMARY KEY,
-                customer_name VARCHAR(100) NOT NULL,
-                product VARCHAR(100) NOT NULL,
-                quantity INTEGER NOT NULL,
-                total_amount NUMERIC(10,2) NOT NULL,
-                status VARCHAR(50) DEFAULT 'PENDING',
-                order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )""";
+        String sql = "CREATE TABLE IF NOT EXISTS orders (" +
+                "id SERIAL PRIMARY KEY," +
+                "customer_name VARCHAR(100) NOT NULL," +
+                "product VARCHAR(100) NOT NULL," +
+                "quantity INTEGER NOT NULL," +
+                "total_amount NUMERIC(10,2) NOT NULL," +
+                "status VARCHAR(50) DEFAULT 'PENDING'," +
+                "order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                ")";
 
         try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
-            log.info("Connection URL: {}", highlightInstanceType(conn.getMetaData().getURL()));
+            log.info("Connection URL: {}", highlightInstanceType(conn));
             log.info("Table 'orders' created or already exists");
         } catch (SQLException e) {
             log.error("Error creating table", e);
@@ -43,7 +42,7 @@ public class OrderDAO {
         try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             
-            log.info("Connection URL: {}", highlightInstanceType(conn.getMetaData().getURL()));
+            log.info("Connection URL: {}", highlightInstanceType(conn));
             
             pstmt.setString(1, order.getCustomerName());
             pstmt.setString(2, order.getProduct());
@@ -73,7 +72,7 @@ public class OrderDAO {
         try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
-            log.info("Connection URL: {}", highlightInstanceType(conn.getMetaData().getURL()));
+            log.info("Connection URL: {}", highlightInstanceType(conn));
             
             pstmt.setString(1, newStatus);
             pstmt.setLong(2, orderId);
@@ -97,7 +96,7 @@ public class OrderDAO {
             try (PreparedStatement pstmt = conn.prepareStatement(sql);
                  ResultSet rs = pstmt.executeQuery()) {
                 
-                log.info("Connection URL: {}", highlightInstanceType(conn.getMetaData().getURL()));
+                log.info("Connection URL: {}", highlightInstanceType(conn));
                 
                 while (rs.next()) {
                     Order order = new Order(
@@ -123,13 +122,11 @@ public class OrderDAO {
 
     public Map<String, Object> getSalesReport() {
         log.info("READ OPERATION: Generating sales report");
-        String sql = """
-            SELECT 
-                COUNT(*) as total_orders,
-                SUM(total_amount) as total_revenue,
-                AVG(total_amount) as avg_order_value
-            FROM orders
-            """;
+        String sql = "SELECT " +
+                "COUNT(*) as total_orders, " +
+                "SUM(total_amount) as total_revenue, " +
+                "AVG(total_amount) as avg_order_value " +
+                "FROM orders";
 
         Map<String, Object> report = new HashMap<>();
 
@@ -139,7 +136,7 @@ public class OrderDAO {
             try (PreparedStatement pstmt = conn.prepareStatement(sql);
                  ResultSet rs = pstmt.executeQuery()) {
                 
-                log.info("Connection URL: {}", highlightInstanceType(conn.getMetaData().getURL()));
+                log.info("Connection URL: {}", highlightInstanceType(conn));
                 
                 if (rs.next()) {
                     report.put("totalOrders", rs.getInt("total_orders"));
@@ -165,7 +162,7 @@ public class OrderDAO {
             conn.setReadOnly(true);  // Enable read/write splitting for this connection
             
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                log.info("Connection URL: {}", highlightInstanceType(conn.getMetaData().getURL()));
+                log.info("Connection URL: {}", highlightInstanceType(conn));
                 
                 pstmt.setString(1, "%" + customerName + "%");
                 
@@ -194,12 +191,24 @@ public class OrderDAO {
     }
     
 
-    private String highlightInstanceType(String url) {
-        if (url.contains("reader")) {
-            return "\n    → READER: " + url;
-        } else if (url.contains("cluster-") && !url.contains("reader")) {
-            return "\n    → WRITER: " + url;
+    private String highlightInstanceType(Connection conn) throws SQLException {
+        String url = conn.getMetaData().getURL();
+        
+        // Query Aurora to determine if this is a reader or writer instance
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT pg_is_in_recovery()")) {
+            if (rs.next()) {
+                boolean isReader = rs.getBoolean(1);
+                String role = isReader ? "READER" : "WRITER";
+                return "\n    → " + role + ": " + url;
+            }
+        } catch (SQLException e) {
+            // Fallback to URL parsing if Aurora query fails
+            if (url.contains("reader")) {
+                return "\n    → READER: " + url;
+            }
         }
-        return url;
+        
+        return "\n    → WRITER: " + url;
     }
 }
