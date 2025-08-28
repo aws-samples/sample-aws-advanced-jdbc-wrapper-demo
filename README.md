@@ -239,7 +239,15 @@ db.username=postgres
 db.password=<Your DB password>
 ```
 
-**Note:** Please make sure you update the database password. The standard JDBC driver requires a password. In upcoming sections, we'll demonstrate how to eliminate this requirement using IAM Database Authentication or AWS Secrets Manager integration using AWS JDBC Driver.
+**Note:** Please make sure you update the database password. Standard JDBC drivers require both username and password credentials to connect to the database. We start with the standard JDBC driver as our baseline and then transform the application to use the AWS JDBC Driver.
+
+In an upcoming blog post, we'll demonstrate how to remove the password requirement entirely by leveraging:
+
+- **IAM Database Authentication** for secure, token-based access
+- **AWS Secrets Manager** for automatic credential management
+- **Federated Authentication** for enterprise identity integration
+
+These AWS authentication methods eliminate the need for hardcoded passwords in your application configuration.
 
 #### 3.2: Run the Application
 
