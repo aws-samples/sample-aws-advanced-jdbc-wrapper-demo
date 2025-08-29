@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `setup-aurora.sh` script creates an Aurora PostgreSQL cluster for the AWS JDBC Driver demo. 
+The `setup-aurora.sh` script creates an Aurora PostgreSQL cluster with a writer and two read replicas for the AWS JDBC Driver demo. 
 
 **Important**: This script does NOT create VPCs, security groups, or DB subnet groups - it only validates that they exist and are properly configured.
 
@@ -53,7 +53,8 @@ vpc-12345678
 
 **List security groups in your VPC:**
 ```bash
-aws ec2 describe-security-groups --filters "Name=vpc-id,Values=vpc-12345678" --query 'SecurityGroups[*].[GroupId,GroupName]' --output table
+# Replace YOUR_VPC_ID with your actual VPC ID
+aws ec2 describe-security-groups --filters "Name=vpc-id,Values=YOUR_VPC_ID" --query 'SecurityGroups[*].[GroupId,GroupName]' --output table
 ```
 
 **Check if security group allows port 5432:**

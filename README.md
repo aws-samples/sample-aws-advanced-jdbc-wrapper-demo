@@ -99,45 +99,78 @@ aws-jdbc-wrapper-demo/
 
 ### ⚡ Quick Start
 
-1. **Clone the repository**
+**📚 For detailed setup instructions and AWS resource configuration, see the [Step-by-Step Implementation](#-step-by-step-implementation) section below.**
 
-   ```bash
-   git clone https://github.com/aws-samples/sample-aws-advanced-jdbc-wrapper-demo.git
-   cd sample-aws-advanced-jdbc-wrapper-demo
-   ```
+#### 1. Clone the repository
+```bash
+git clone https://github.com/aws-samples/sample-aws-advanced-jdbc-wrapper-demo.git
+cd sample-aws-advanced-jdbc-wrapper-demo
+```
 
-2. **Configure your environment**
+#### 2. Create .env file that will be used to provision Aurora cluster
 
-   ```bash
-   cp .env.example .env
-   # Edit .env with your AWS resource values
-   ```
+```bash
+cp .env.example .env
+```
 
-   **📚 For detailed AWS infrastructure setup instructions, see our [Aurora Setup Reference Guide](SETUP_AURORA_REFERENCE.md)**
+#### 3. Edit .env with your AWS resource values
 
-3. **Create Aurora cluster**
+For detailed AWS infrastructure setup instructions, see our [Aurora Setup Reference Guide](SETUP_AURORA_REFERENCE.md).
 
-   ```bash
-   ./setup-aurora.sh
-   ```
+#### 4. Create Aurora cluster
 
-4. **Run the demo**
+Required AWS resources must be configured in .env file. This script does NOT create VPCs, security groups, or DB subnet groups - it only validates that they exist and are properly configured.
 
-   ```bash
-   # Step 1: Standard JDBC baseline
-   ./demo.sh standard-jdbc
+```bash
+./setup-aurora.sh
+```
 
-   # Step 2: AWS JDBC Driver with failover
-   ./demo.sh aws-jdbc-wrapper
+#### 5. Create application properties file in src/main/resources directory
 
-   # Step 3: Enable read/write splitting
-   ./demo.sh read-write-splitting
-   ```
+```bash
+cp src/main/resources/application.properties.example src/main/resources/application.properties
+```
 
-5. **Clean up resources**
-   ```bash
-   ./cleanup-aurora.sh
-   ```
+Edit application.properties with your Aurora connection details.
+
+#### 6. Edit src/main/resources/application.properties with URI and database username
+
+These values will be displayed when your Aurora cluster is successfully completed (step 4).
+
+#### 7. Set up environment variable
+
+```bash
+export DB_PASSWORD=<your_database_password>
+```
+
+#### 8. Run command to configure standard JDBC and run the application
+
+As described in [Stage 1: Standard JDBC (Baseline)](#solution-overview), this configures the application with standard JDBC driver.
+
+```bash
+./demo.sh standard-jdbc
+```
+
+#### 9. Run command to configure AWS JDBC wrapper with failover
+
+As described in [Stage 2: AWS JDBC with failover](#solution-overview), this adds fast failover capabilities.
+
+```bash
+./demo.sh aws-jdbc-wrapper
+```
+
+#### 10. Run command to enable read/write splitting
+
+As described in [Stage 3: Read/Write splitting](#solution-overview), this enables intelligent connection routing.
+
+```bash
+./demo.sh read-write-splitting
+```
+
+#### 11. Clean up
+```bash
+./cleanup-aurora.sh
+```
 
 ## 📚 Step-by-Step Implementation
 
@@ -215,15 +248,24 @@ export DB_PASSWORD=<your_actual_aurora_password>
 
 ### 📊 Step 3: Establish Baseline
 
-Now let's run our application using the standard PostgreSQL JDBC driver to establish our baseline before we enhance it with AWS JDBC Driver capabilities.
+Now let's run our application using the standard PostgreSQL JDBC driver to establish our baseline before we enhance it with AWS JDBC wrapper capabilities.
 
 #### 3.1: Configure Application to use the database created
 
-Create the application configuration file to connect to your newly created Aurora cluster. You'll use the connection details that were displayed when the Aurora cluster was successfully created.
+**If you used the automated script**, use the connection details displayed after cluster creation. **If you created the cluster manually through the AWS Console**, gather your Aurora cluster endpoints from the RDS console. Then update the application configuration file with these details:
+
+Create the application configuration file to connect to your newly created Aurora cluster:
 
 **Create `src/main/resources/application.properties`:**
 
+```bash
+cp src/main/resources/application.properties.example src/main/resources/application.properties
+```
+
+Edit `src/main/resources/application.properties` with your Aurora connection details.
+
 ```properties
+# Example configuration - replace with your actual Aurora endpoints
 db.url=jdbc:postgresql://aurora-jdbc-demo.cluster-abc123.us-east-1.rds.amazonaws.com:5432/postgres
 db.username=postgres
 ```
@@ -251,9 +293,6 @@ Execute the application to observe standard JDBC behavior:
 **Make sure the environment variable is set and run the application:**
 
 ```bash
-# Ensure the DB_PASSWORD environment variable is set
-export DB_PASSWORD=<your_actual_aurora_password>
-
 # Run the application
 ./gradlew clean run
 ```
@@ -283,9 +322,9 @@ BUILD SUCCESSFUL in 2s
 
 **Key Observation:** All operations (reads and writes) use the same Aurora writer endpoint, demonstrating standard JDBC behavior where everything hits the primary database.
 
-### 🔄 Step 4: Transform the application to use AWS JDBC Driver
+### 🔄 Step 4: Upgrade the application to use AWS JDBC Driver
 
-Now let's transform this application to use AWS JDBC Driver while maintaining the same functionality, adding cloud-native capabilities like fast failover.
+Now let's upgrde this application to use AWS JDBC Driver while maintaining the same functionality, adding fast failover.
 
 #### 4.1: Review the changes needed to use AWS JDBC Driver
 
@@ -299,13 +338,13 @@ Before running the script, let's examine what changes are needed to understand h
 
 ```gradle
 dependencies {
-    implementation 'com.zaxxer:HikariCP:5.0.1'
-    implementation 'org.postgresql:postgresql:42.6.0'
-    implementation 'ch.qos.logback:logback-classic:1.4.11'
-    implementation 'org.slf4j:slf4j-api:2.0.9'
+    implementation 'com.zaxxer:HikariCP:4.0.3'
+    implementation 'org.postgresql:postgresql:42.4.4'
+    implementation 'ch.qos.logback:logback-classic:1.2.12'
+    implementation 'org.slf4j:slf4j-api:1.7.36'
 
-    compileOnly 'org.projectlombok:lombok:1.18.30'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 ```
 
@@ -313,14 +352,14 @@ dependencies {
 
 ```gradle
 dependencies {
-    implementation 'com.zaxxer:HikariCP:5.0.1'
-    implementation 'org.postgresql:postgresql:42.6.0'
-    implementation 'software.amazon.jdbc:aws-advanced-jdbc-wrapper:2.5.6'  // ← Add this
-    implementation 'ch.qos.logback:logback-classic:1.4.11'
-    implementation 'org.slf4j:slf4j-api:2.0.9'
+    implementation 'com.zaxxer:HikariCP:4.0.3'
+    implementation 'org.postgresql:postgresql:42.4.4'
+    implementation 'software.amazon.jdbc:aws-advanced-jdbc-wrapper:2.6.2'  // ← Add this
+    implementation 'ch.qos.logback:logback-classic:1.2.12'
+    implementation 'org.slf4j:slf4j-api:1.7.36'
 
-    compileOnly 'org.projectlombok:lombok:1.18.30'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 ```
 
@@ -507,3 +546,4 @@ See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more inform
 ## License
 
 This library is licensed under the MIT-0 License. See the LICENSE file.
+ need 

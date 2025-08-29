@@ -1,3 +1,2 @@
 db.url=jdbc:postgresql://aurora-jdbc-demo.cluster-abc123.us-east-1.rds.amazonaws.com:5432/postgres
 db.username=postgres
-db.password=<Your DB password>
