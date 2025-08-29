@@ -26,7 +26,13 @@ public class DatabaseConfig {
             
             Properties targetProps = new Properties();
             targetProps.setProperty("user", props.getProperty("db.username"));
-            targetProps.setProperty("password", props.getProperty("db.password"));
+            
+            // Get password from environment variable only
+            String password = System.getenv("DB_PASSWORD");
+            if (password == null || password.trim().isEmpty()) {
+                throw new RuntimeException("DB_PASSWORD environment variable is required but not set");
+            }
+            targetProps.setProperty("password", password);
             targetProps.setProperty("wrapperPlugins", "readWriteSplitting,failover");
             
             config.addDataSourceProperty("targetDataSourceProperties", targetProps);

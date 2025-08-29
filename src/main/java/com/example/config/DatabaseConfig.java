@@ -18,21 +18,34 @@ public class DatabaseConfig {
             Properties props = loadConfig();
             HikariConfig config = new HikariConfig();
             
-            // Standard JDBC configuration
+            // AWS JDBC Wrapper with Read/Write Splitting
+            config.setDataSourceClassName("software.amazon.jdbc.ds.AwsWrapperDataSource");
             configuredJdbcUrl = props.getProperty("db.url");
-            config.setJdbcUrl(configuredJdbcUrl);
-            config.setUsername(props.getProperty("db.username"));
-            config.setPassword(props.getProperty("db.password"));
+            config.addDataSourceProperty("jdbcUrl", configuredJdbcUrl);
+            config.addDataSourceProperty("targetDataSourceClassName", "org.postgresql.ds.PGSimpleDataSource");
+            
+            Properties targetProps = new Properties();
+            targetProps.setProperty("user", props.getProperty("db.username"));
+            
+            // Get password from environment variable only
+            String password = System.getenv("DB_PASSWORD");
+            if (password == null || password.trim().isEmpty()) {
+                throw new RuntimeException("DB_PASSWORD environment variable is required but not set");
+            }
+            targetProps.setProperty("password", password);
+            targetProps.setProperty("wrapperPlugins", "readWriteSplitting,failover");
+            
+            config.addDataSourceProperty("targetDataSourceProperties", targetProps);
             
             config.setMaximumPoolSize(5);
             config.setMinimumIdle(2);
             config.setIdleTimeout(300000);
             config.setConnectionTimeout(20000);
-            config.setPoolName("StandardPostgresPool");
+            config.setPoolName("AWSJDBCReadWritePool");
             
             dataSource = new HikariDataSource(config);
             
-            log.info("Standard JDBC connection pool initialized");
+            log.info("AWS JDBC Wrapper with Read/Write Splitting initialized");
         } catch (IOException e) {
             log.error("Failed to initialize database connection pool", e);
             throw new RuntimeException(e);

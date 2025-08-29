@@ -22,7 +22,13 @@ public class DatabaseConfig {
             configuredJdbcUrl = props.getProperty("db.url");
             config.setJdbcUrl(configuredJdbcUrl);
             config.setUsername(props.getProperty("db.username"));
-            config.setPassword(props.getProperty("db.password"));
+            
+            // Get password from environment variable only
+            String password = System.getenv("DB_PASSWORD");
+            if (password == null || password.trim().isEmpty()) {
+                throw new RuntimeException("DB_PASSWORD environment variable is required but not set");
+            }
+            config.setPassword(password);
             
             config.setMaximumPoolSize(5);
             config.setMinimumIdle(2);

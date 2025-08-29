@@ -90,27 +90,30 @@ public class OrderDAO {
         String sql = "SELECT * FROM orders ORDER BY order_date DESC";
         List<Order> orders = new ArrayList<>();
 
-        try (Connection conn = DatabaseConfig.getDataSource().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
+        try (Connection conn = DatabaseConfig.getDataSource().getConnection()) {
+            conn.setReadOnly(true);  // Enable read/write splitting for this connection
+            
+            try (PreparedStatement pstmt = conn.prepareStatement(sql);
+                 ResultSet rs = pstmt.executeQuery()) {
                 
-            log.info("Connection URL: {}", highlightInstanceType(conn));
-            
-            while (rs.next()) {
-                Order order = new Order(
-                    rs.getLong("id"),
-                    rs.getString("customer_name"),
-                    rs.getString("product"),
-                    rs.getInt("quantity"),
-                    rs.getDouble("total_amount"),
-                    rs.getString("status"),
-                    rs.getTimestamp("order_date").toLocalDateTime()
-                );
-                orders.add(order);
+                log.info("Connection URL: {}", highlightInstanceType(conn));
+                
+                while (rs.next()) {
+                    Order order = new Order(
+                        rs.getLong("id"),
+                        rs.getString("customer_name"),
+                        rs.getString("product"),
+                        rs.getInt("quantity"),
+                        rs.getDouble("total_amount"),
+                        rs.getString("status"),
+                        rs.getTimestamp("order_date").toLocalDateTime()
+                    );
+                    orders.add(order);
+                }
+                
+                log.info("Found {} orders", orders.size());
+                return orders;
             }
-            
-            log.info("Found {} orders", orders.size());
-            return orders;
         } catch (SQLException e) {
             log.error("Error getting order history", e);
             throw new RuntimeException(e);
@@ -127,20 +130,23 @@ public class OrderDAO {
 
         Map<String, Object> report = new HashMap<>();
 
-        try (Connection conn = DatabaseConfig.getDataSource().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
+        try (Connection conn = DatabaseConfig.getDataSource().getConnection()) {
+            conn.setReadOnly(true);  // Enable read/write splitting for this connection
+            
+            try (PreparedStatement pstmt = conn.prepareStatement(sql);
+                 ResultSet rs = pstmt.executeQuery()) {
                 
-            log.info("Connection URL: {}", highlightInstanceType(conn));
-            
-            if (rs.next()) {
-                report.put("totalOrders", rs.getInt("total_orders"));
-                report.put("totalRevenue", rs.getDouble("total_revenue"));
-                report.put("avgOrderValue", rs.getDouble("avg_order_value"));
+                log.info("Connection URL: {}", highlightInstanceType(conn));
+                
+                if (rs.next()) {
+                    report.put("totalOrders", rs.getInt("total_orders"));
+                    report.put("totalRevenue", rs.getDouble("total_revenue"));
+                    report.put("avgOrderValue", rs.getDouble("avg_order_value"));
+                }
+                
+                log.info("Sales report generated: {}", report);
+                return report;
             }
-            
-            log.info("Sales report generated: {}", report);
-            return report;
         } catch (SQLException e) {
             log.error("Error generating sales report", e);
             throw new RuntimeException(e);
@@ -152,29 +158,32 @@ public class OrderDAO {
         String sql = "SELECT * FROM orders WHERE customer_name ILIKE ? ORDER BY order_date DESC";
         List<Order> orders = new ArrayList<>();
 
-        try (Connection conn = DatabaseConfig.getDataSource().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            log.info("Connection URL: {}", highlightInstanceType(conn));
+        try (Connection conn = DatabaseConfig.getDataSource().getConnection()) {
+            conn.setReadOnly(true);  // Enable read/write splitting for this connection
             
-            pstmt.setString(1, "%" + customerName + "%");
-            
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    Order order = new Order(
-                        rs.getLong("id"),
-                        rs.getString("customer_name"),
-                        rs.getString("product"),
-                        rs.getInt("quantity"),
-                        rs.getDouble("total_amount"),
-                        rs.getString("status"),
-                        rs.getTimestamp("order_date").toLocalDateTime()
-                    );
-                    orders.add(order);
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                log.info("Connection URL: {}", highlightInstanceType(conn));
+                
+                pstmt.setString(1, "%" + customerName + "%");
+                
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    while (rs.next()) {
+                        Order order = new Order(
+                            rs.getLong("id"),
+                            rs.getString("customer_name"),
+                            rs.getString("product"),
+                            rs.getInt("quantity"),
+                            rs.getDouble("total_amount"),
+                            rs.getString("status"),
+                            rs.getTimestamp("order_date").toLocalDateTime()
+                        );
+                        orders.add(order);
+                    }
                 }
+                
+                log.info("Found {} orders for customer: {}", orders.size(), customerName);
+                return orders;
             }
-            
-            log.info("Found {} orders for customer: {}", orders.size(), customerName);
-            return orders;
         } catch (SQLException e) {
             log.error("Error searching orders", e);
             throw new RuntimeException(e);
