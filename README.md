@@ -1,10 +1,6 @@
-## My Project
+## AWS JDBC Drive Demo Application
 
-TODO: Fill this README out!
 
-Be sure to:
-
-* Change the title in this README
 * Edit your repository description on GitHub
 
 ## Security
