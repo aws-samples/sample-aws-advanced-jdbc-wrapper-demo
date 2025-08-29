@@ -3,7 +3,7 @@
 
 ## 🎯 Purpose
 
-**The purpose of this repository is to help developers learn how to leverage the powerful features of [AWS JDBC Driver](https://github.com/aws/aws-advanced-jdbc-wrapper) in their existing enterprise Java applications.**
+**The purpose of this repository is to help developers learn how to benefit from the powerful features of [AWS JDBC Driver](https://github.com/aws/aws-advanced-jdbc-wrapper) in their existing enterprise Java applications.**
 
 We aim to provide step-by-step instructions through our real-world order management system demo, where developers will learn how to:
 
@@ -153,7 +153,7 @@ As described in [Stage 1: Standard JDBC (Baseline)](#solution-overview), this co
 
 #### 9. Run command to configure AWS JDBC wrapper with failover
 
-As described in [Stage 2: AWS JDBC with failover](#solution-overview), this adds fast failover capabilities.
+As described in [Stage 2: AWS JDBC with failover](#stage-2-aws-jdbc-with-failover), this adds fast failover capabilities.
 
 ```bash
 ./demo.sh aws-jdbc-wrapper
@@ -161,7 +161,7 @@ As described in [Stage 2: AWS JDBC with failover](#solution-overview), this adds
 
 #### 10. Run command to enable read/write splitting
 
-As described in [Stage 3: Read/Write splitting](#solution-overview), this enables intelligent connection routing.
+As described in [Stage 3: Read/Write splitting](#stage-3-readwrite-splitting), this enables intelligent connection routing.
 
 ```bash
 ./demo.sh read-write-splitting
@@ -343,6 +343,7 @@ dependencies {
     implementation 'ch.qos.logback:logback-classic:1.2.12'
     implementation 'org.slf4j:slf4j-api:1.7.36'
 
+L
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
