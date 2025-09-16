@@ -1,4 +1,4 @@
-
+Lets 
 ## 🚀 AWS Advanced JDBC Driver Demo Application
 
 ## 📚 Table of Contents
@@ -481,7 +481,7 @@ See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more inform
 
 ## <a id="contributors"></a>👥 Contributors
 
-- **Ramesh Eega** - Enhanced documentation, improved setup scripts, and added comprehensive IAM policies for secure CDK deployment
+- **Ramesh Eega** - Author of this AWS Advanced JDBC Driver demo application
 
 ## <a id="license"></a>📄 License
 
