@@ -375,13 +375,13 @@ Running application...
 === WRITE OPERATIONS ===
 16:22:19.661 [main] INFO com.example.dao.OrderDAO - WRITE OPERATION: Creating new order for customer: John Doe
 16:22:19.665 [main] INFO com.example.dao.OrderDAO - Connection URL:
-    → WRITER: jdbc:postgresql://aurora-jdbc-demo4.cluster-curzkcvul3uv.us-east-1.rds.amazonaws.com:5432/postgres
+    → WRITER: jdbc:postgresql://aurora-jdbc-demo4.cluster-xxxxxxx.us-east-1.rds.amazonaws.com:5432/postgres
 16:22:19.684 [main] INFO com.example.dao.OrderDAO - Order created with ID: 13
 
 === READ OPERATIONS ===
 16:22:19.706 [main] INFO com.example.dao.OrderDAO - READ OPERATION: Getting order history
 16:22:19.708 [main] INFO com.example.dao.OrderDAO - Connection URL:
-    → WRITER: jdbc:postgresql://aurora-jdbc-demo4.cluster-curzkcvul3uv.us-east-1.rds.amazonaws.com:5432/postgres
+    → WRITER: jdbc:postgresql://aurora-jdbc-demo4.cluster-xxxxxxx.us-east-1.rds.amazonaws.com:5432/postgres
 16:22:19.714 [main] INFO com.example.dao.OrderDAO - Found 16 orders
 ```
 
@@ -432,7 +432,7 @@ Running application...
 === PERFORMING WRITE OPERATIONS ===
 16:51:19.434 [main] INFO com.example.dao.OrderDAO - WRITE OPERATION: Creating new order for customer: John Doe
 16:51:19.437 [main] INFO com.example.dao.OrderDAO - Connection URL:
-    → WRITER: jdbc:postgresql://aurora-jdbc-demo4.cluster-curzkcvul3uv.us-east-1.rds.amazonaws.com:5432/postgres
+    → WRITER: jdbc:postgresql://aurora-jdbc-demo4.cluster-xxxxxxx.us-east-1.rds.amazonaws.com:5432/postgres
 16:51:19.456 [main] INFO com.example.dao.OrderDAO - Order created with ID: 17
 
 === PERFORMING READ OPERATIONS ===
