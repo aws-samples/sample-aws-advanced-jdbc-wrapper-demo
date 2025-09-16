@@ -1,0 +1,265 @@
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "ProjectStackFullAccess",
+			"Effect": "Allow",
+			"Action": [
+				"cloudformation:*"
+			],
+			"Resource": [
+				"arn:aws:cloudformation:*:*:stack/aws-jdbc-driver-stack/*"
+			]
+		},
+		{
+			"Sid": "CDKCloudFormationAccess",
+			"Effect": "Allow",
+			"Action": [
+				"cloudformation:DescribeStacks",
+				"cloudformation:DescribeStackResources",
+				"cloudformation:DescribeStackEvents",
+				"cloudformation:GetTemplate",
+				"cloudformation:ListStacks"
+			],
+			"Resource": [
+				"arn:aws:cloudformation:*:*:stack/CDKToolkit/*",
+				"arn:aws:cloudformation:*:*:stack/cdk-*/*"
+			]
+		},
+		{
+			"Sid": "CDKRoleAccess",
+			"Effect": "Allow",
+			"Action": [
+				"iam:PassRole",
+				"sts:AssumeRole"
+			],
+			"Resource": [
+				"arn:aws:iam::*:role/cdk-*-*-role-*-*"
+			]
+		},
+		{
+			"Sid": "CDKS3Access",
+			"Effect": "Allow",
+			"Action": [
+				"s3:GetObject",
+				"s3:PutObject",
+				"s3:ListBucket",
+				"s3:GetBucketLocation"
+			],
+			"Resource": [
+				"arn:aws:s3:::cdk-*",
+				"arn:aws:s3:::cdk-*/*"
+			]
+		},
+		{
+			"Sid": "SSMParameterAccess",
+			"Effect": "Allow",
+			"Action": [
+				"ssm:GetParameter"
+			],
+			"Resource": "*",
+			"Condition": {
+				"StringLike": {
+					"ssm:Name": "/cdk-bootstrap/*"
+				}
+			}
+		},
+		{
+			"Sid": "GeneralCloudFormationReadOnly",
+			"Effect": "Allow",
+			"Action": [
+				"cloudformation:ListStacks"
+			],
+			"Resource": "*"
+		},
+		{
+			"Sid": "RDSReadOnlyPermissions",
+			"Effect": "Allow",
+			"Action": [
+				"rds:DescribeDBClusters",
+				"rds:DescribeDBInstances",
+				"rds:DescribeDBSubnetGroups",
+				"rds:DescribeDBClusterParameterGroups",
+				"rds:DescribeDBParameterGroups"
+			],
+			"Resource": "*",
+			"Condition": {
+				"StringEquals": {
+					"aws:ResourceTag/Project": "AWS-JDBC-Driver-Demo"
+				}
+			}
+		},
+		{
+			"Sid": "RDSCreatePermissions",
+			"Effect": "Allow",
+			"Action": [
+				"rds:CreateDBCluster",
+				"rds:CreateDBInstance",
+				"rds:CreateDBSubnetGroup",
+				"rds:AddTagsToResource"
+			],
+			"Resource": "*",
+			"Condition": {
+				"StringEquals": {
+					"aws:RequestTag/Project": "AWS-JDBC-Driver-Demo",
+					"aws:RequestTag/AutoDelete": "true"
+				}
+			}
+		},
+		{
+			"Sid": "RDSDeletePermissionsTaggedOnly",
+			"Effect": "Allow",
+			"Action": [
+				"rds:DeleteDBCluster",
+				"rds:DeleteDBInstance",
+				"rds:DeleteDBSubnetGroup"
+			],
+			"Resource": "*",
+			"Condition": {
+				"StringEquals": {
+					"aws:ResourceTag/Project": "AWS-JDBC-Driver-Demo",
+					"aws:ResourceTag/AutoDelete": "true"
+				}
+			}
+		},
+		{
+			"Sid": "RDSTaggingPermissions",
+			"Effect": "Allow",
+			"Action": [
+				"rds:ListTagsForResource",
+				"rds:AddTagsToResource",
+				"rds:RemoveTagsFromResource"
+			],
+			"Resource": "*",
+			"Condition": {
+				"StringEquals": {
+					"aws:ResourceTag/Project": "AWS-JDBC-Driver-Demo"
+				}
+			}
+		},
+		{
+			"Sid": "EC2ReadOnlyPermissions",
+			"Effect": "Allow",
+			"Action": [
+				"ec2:DescribeVpcs",
+				"ec2:DescribeSubnets",
+				"ec2:DescribeSecurityGroups",
+				"ec2:DescribeAvailabilityZones",
+				"ec2:DescribeRouteTables",
+				"ec2:DescribeInternetGateways",
+				"ec2:DescribeNatGateways"
+			],
+			"Resource": "*",
+			"Condition": {
+				"StringEquals": {
+					"aws:ResourceTag/Project": "AWS-JDBC-Driver-Demo"
+				}
+			}
+		},
+		{
+			"Sid": "EC2CreatePermissions",
+			"Effect": "Allow",
+			"Action": [
+				"ec2:CreateVpc",
+				"ec2:CreateSubnet",
+				"ec2:CreateSecurityGroup",
+				"ec2:AuthorizeSecurityGroupIngress",
+				"ec2:ModifyVpcAttribute",
+				"ec2:CreateTags",
+				"ec2:CreateRouteTable",
+				"ec2:CreateRoute",
+				"ec2:AssociateRouteTable",
+				"ec2:CreateInternetGateway",
+				"ec2:AttachInternetGateway"
+			],
+			"Resource": "*",
+			"Condition": {
+				"StringEquals": {
+					"aws:RequestTag/Project": "AWS-JDBC-Driver-Demo",
+					"aws:RequestTag/AutoDelete": "true"
+				}
+			}
+		},
+		{
+			"Sid": "EC2DeletePermissionsTaggedOnly",
+			"Effect": "Allow",
+			"Action": [
+				"ec2:DeleteVpc",
+				"ec2:DeleteSubnet",
+				"ec2:DeleteSecurityGroup",
+				"ec2:RevokeSecurityGroupIngress",
+				"ec2:DeleteRouteTable",
+				"ec2:DeleteRoute",
+				"ec2:DisassociateRouteTable",
+				"ec2:DeleteInternetGateway",
+				"ec2:DetachInternetGateway"
+			],
+			"Resource": "*",
+			"Condition": {
+				"StringEquals": {
+					"aws:ResourceTag/Project": "AWS-JDBC-Driver-Demo",
+					"aws:ResourceTag/AutoDelete": "true"
+				}
+			}
+		},
+		{
+			"Sid": "SecretsManagerReadPermissions",
+			"Effect": "Allow",
+			"Action": [
+				"secretsmanager:GetSecretValue"
+			],
+			"Resource": "*",
+			"Condition": {
+				"StringEquals": {
+					"aws:ResourceTag/Project": "AWS-JDBC-Driver-Demo"
+				}
+			}
+		},
+		{
+			"Sid": "SecretsManagerCreatePermissions",
+			"Effect": "Allow",
+			"Action": [
+				"secretsmanager:CreateSecret",
+				"secretsmanager:UpdateSecret",
+				"secretsmanager:TagResource"
+			],
+			"Resource": "*",
+			"Condition": {
+				"StringEquals": {
+					"aws:RequestTag/Project": "AWS-JDBC-Driver-Demo",
+					"aws:RequestTag/AutoDelete": "true"
+				}
+			}
+		},
+		{
+			"Sid": "SecretsManagerDeletePermissionsTaggedOnly",
+			"Effect": "Allow",
+			"Action": [
+				"secretsmanager:DeleteSecret"
+			],
+			"Resource": "*",
+			"Condition": {
+				"StringEquals": {
+					"aws:ResourceTag/Project": "AWS-JDBC-Driver-Demo",
+					"aws:ResourceTag/AutoDelete": "true"
+				}
+			}
+		},
+		{
+			"Sid": "CloudWatchLogsPermissions",
+			"Effect": "Allow",
+			"Action": [
+				"logs:CreateLogGroup",
+				"logs:DeleteLogGroup",
+				"logs:DescribeLogGroups",
+				"logs:PutRetentionPolicy"
+			],
+			"Resource": "*",
+			"Condition": {
+				"StringEquals": {
+					"aws:RequestTag/Project": "AWS-JDBC-Driver-Demo"
+				}
+			}
+		}
+	]
+}
