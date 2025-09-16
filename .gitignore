@@ -1,0 +1,47 @@
+# CDK context files
+infrastructure/cdk/cdk.context.json
+
+# Application properties with sensitive data
+src/main/resources/application.properties
+build/resources/main/application.properties
+
+# Backup files
+*.backup
+*.bak
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# AWS credentials
+.aws/
+credentials
+config
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Build outputs
+build/
+target/
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp

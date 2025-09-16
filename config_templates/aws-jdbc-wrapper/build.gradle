@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'com.example'
+version = '1.0-SNAPSHOT'
+sourceCompatibility = '8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.zaxxer:HikariCP:4.0.3'
+    implementation 'org.postgresql:postgresql:42.4.4'
+    implementation 'software.amazon.jdbc:aws-advanced-jdbc-wrapper:2.6.2'
+    implementation 'ch.qos.logback:logback-classic:1.2.12'
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+    
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+}
+
+application {
+    mainClass = 'com.example.Application'
+}
