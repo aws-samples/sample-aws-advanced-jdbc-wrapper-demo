@@ -1,4 +1,4 @@
-Lets 
+
 ## 🚀 AWS Advanced JDBC Driver Demo Application
 
 ## 📚 Table of Contents
