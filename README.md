@@ -86,7 +86,7 @@ The AWS Advanced JDBC Driver is an intelligent wrapper that enhances your existi
 **Choose your infrastructure setup approach:**
 
 **Option A: Infrastructure as Code with [AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/home.html) (Recommended)**
-- **Additional requirements:** [Node.js 20+](https://nodejs.org/en/download/), [Maven 3.6+](https://maven.apache.org/download.cgi)
+- **Additional requirements:** [Node.js 24+](https://nodejs.org/en/download/), [Maven 3.9+](https://maven.apache.org/download.cgi)
 - **AWS CDK v2 installed and configured**
   - Install: `npm install -g aws-cdk` ([Getting Started Guide](https://docs.aws.amazon.com/cdk/v2/guide/getting-started.html))
   - Bootstrap: `cdk bootstrap` ([Bootstrap Command Reference](https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-bootstrap.html) if not done previously)
@@ -219,7 +219,7 @@ As described in the [Solution Overview](#🔧-solution-overview), this configure
 
 ```bash
 # Run the application
-./gradlew clean run
+./demo.sh standard-jdbc
 ```
 
 **Note:** The `./demo.sh standard-jdbc` command resets the application to use standard JDBC driver configuration.
@@ -438,12 +438,12 @@ Running application...
 === PERFORMING READ OPERATIONS ===
 16:51:19.477 [main] INFO com.example.dao.OrderDAO - READ OPERATION: Getting order history
 16:51:20.044 [main] INFO com.example.dao.OrderDAO - Connection URL:
-    → READER: jdbc:postgresql://aurora-jdbc-reader-2.curzkcvul3uv.us-east-1.rds.amazonaws.com:5432/postgres
+    → READER: jdbc:postgresql://aurora-jdbc-reader-2.xxxxxxx.us-east-1.rds.amazonaws.com:5432/postgres
 16:51:20.051 [main] INFO com.example.dao.OrderDAO - Found 20 orders
 
 16:51:20.052 [main] INFO com.example.dao.OrderDAO - READ OPERATION: Generating sales report
 16:51:20.285 [main] INFO com.example.dao.OrderDAO - Connection URL:
-    → READER: jdbc:postgresql://aurora-jdbc-reader-2.curzkcvul3uv.us-east-1.rds.amazonaws.com:5432/postgres
+    → READER: jdbc:postgresql://aurora-jdbc-reader-2.xxxxxxx.us-east-1.rds.amazonaws.com:5432/postgres
 16:51:20.285 [main] INFO com.example.dao.OrderDAO - Sales report generated: {totalOrders=20, totalRevenue=8150.0}
 
 BUILD SUCCESSFUL in 3s
