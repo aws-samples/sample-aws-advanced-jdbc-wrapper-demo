@@ -281,7 +281,7 @@ dependencies {
 dependencies {
     implementation 'com.zaxxer:HikariCP:4.0.3'
     implementation 'org.postgresql:postgresql:42.4.4'
-    implementation 'software.amazon.jdbc:aws-advanced-jdbc-wrapper:2.6.2'  // ← Add this
+    implementation 'software.amazon.jdbc:aws-advanced-jdbc-wrapper:4.4.0'  // ← Add this
     implementation 'ch.qos.logback:logback-classic:1.2.12'
     implementation 'org.slf4j:slf4j-api:1.7.36'
 
