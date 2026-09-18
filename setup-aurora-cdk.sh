@@ -143,6 +143,7 @@ USERNAME=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --regio
 WRITER_ENDPOINT=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --region "$CDK_DEFAULT_REGION" --query "Stacks[0].Outputs[?OutputKey=='WriterEndpoint'].OutputValue" --output text 2>/dev/null || echo "")
 SECRET_ARN=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --region "$CDK_DEFAULT_REGION" --query "Stacks[0].Outputs[?OutputKey=='SecretArn'].OutputValue" --output text 2>/dev/null || echo "")
 DATABASE_NAME=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --region "$CDK_DEFAULT_REGION" --query "Stacks[0].Outputs[?OutputKey=='DatabaseName'].OutputValue" --output text 2>/dev/null || echo "postgres")
+CLUSTER_RESOURCE_ID=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --region "$CDK_DEFAULT_REGION" --query "Stacks[0].Outputs[?OutputKey=='ClusterResourceId'].OutputValue" --output text 2>/dev/null || echo "")
 
 # Check if outputs were retrieved successfully
 if [ -z "$WRITER_ENDPOINT" ] || [ "$WRITER_ENDPOINT" = "None" ]; then
@@ -163,6 +164,7 @@ echo "Username: ${USERNAME}"
 echo "Database: ${DATABASE_NAME}"
 echo "Port: 5432"
 echo "Region: ${CDK_DEFAULT_REGION}"
+echo "Cluster Resource ID: ${CLUSTER_RESOURCE_ID}"
 
 echo ""
 echo "📝 Updating application.properties..."
@@ -198,7 +200,7 @@ echo ""
 echo "📋 Next steps:"
 echo "1. ✅ application.properties has been updated automatically"
 echo "2. Set up database password environment variable (see step 5 in README)"
-echo "3. Run the demo: ./gradlew clean run"
+echo "3. Run the demo: ./demo.sh standard-jdbc"
 echo ""
 echo "🧹 To clean up resources later:"
 echo "   cd infrastructure/cdk && cdk destroy"

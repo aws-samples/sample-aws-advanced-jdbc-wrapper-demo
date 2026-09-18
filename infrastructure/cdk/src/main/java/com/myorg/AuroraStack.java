@@ -92,6 +92,10 @@ public class AuroraStack extends Stack {
                 .engine(DatabaseClusterEngine.auroraPostgres(AuroraPostgresClusterEngineProps.builder()
                         .version(AuroraPostgresEngineVersion.VER_17_7)
                         .build()))
+                // Reject plaintext connections. IAM database authentication only works over TLS.
+                .parameters(java.util.Collections.singletonMap("rds.force_ssl", "1"))
+                // Allow connections authenticated with a short-lived IAM token instead of a password.
+                .iamAuthentication(true)
                 .clusterIdentifier("aws-jdbc-driver-stack-" + clusterId)
                 .credentials(Credentials.fromGeneratedSecret(
                     dbUsername, 
@@ -147,6 +151,11 @@ public class AuroraStack extends Stack {
         CfnOutput.Builder.create(this, "DatabaseName")
                 .value(dbName)
                 .description("Database name")
+                .build();
+
+        CfnOutput.Builder.create(this, "ClusterResourceId")
+                .value(cluster.getClusterResourceIdentifier())
+                .description("Aurora cluster resource ID used in rds-db:connect IAM policy ARNs")
                 .build();
 
         CfnOutput.Builder.create(this, "Username")
