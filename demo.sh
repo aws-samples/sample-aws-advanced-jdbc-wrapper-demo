@@ -17,6 +17,10 @@ if [ -z "${DEMO_STEP}" ]; then
     exit 1
 fi
 
+# The config package holds the generated DatabaseConfig.java and is git-ignored,
+# so it does not exist in a fresh clone. Create it before copying templates into it.
+mkdir -p src/main/java/com/example/config
+
 case "${DEMO_STEP}" in
     "standard-jdbc")
         echo "=== Baseline: Standard JDBC Configuration ==="

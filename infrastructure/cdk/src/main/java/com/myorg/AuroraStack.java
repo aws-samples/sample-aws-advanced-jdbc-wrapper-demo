@@ -90,7 +90,7 @@ public class AuroraStack extends Stack {
         // Create Aurora PostgreSQL cluster
         DatabaseCluster cluster = DatabaseCluster.Builder.create(this, clusterId + "-aurora-cluster")
                 .engine(DatabaseClusterEngine.auroraPostgres(AuroraPostgresClusterEngineProps.builder()
-                        .version(AuroraPostgresEngineVersion.VER_15_4)
+                        .version(AuroraPostgresEngineVersion.VER_17_7)
                         .build()))
                 .clusterIdentifier("aws-jdbc-driver-stack-" + clusterId)
                 .credentials(Credentials.fromGeneratedSecret(
