@@ -111,7 +111,7 @@ Our demo application simulates a real-world order management system powering an 
 ### <a id="-repository-structure"></a>📁 Repository Structure
 
 ```
-aws-jdbc-wrapper-demo/
+sample-aws-advanced-jdbc-wrapper-demo/
 ├── src/main/java/com/example/
 │   ├── Application.java           # Main application entry point
 │   ├── model/
@@ -119,10 +119,11 @@ aws-jdbc-wrapper-demo/
 │   ├── dao/
 │   │   └── OrderDAO.java         # Data access layer (create, update, query operations)
 │   └── config/
-│       └── DatabaseConfig.java   # HikariCP + JDBC configuration
+│       └── DatabaseConfig.java   # HikariCP + JDBC configuration (written by demo.sh)
 ├── src/main/resources/
-│   ├── application.properties    # Database connection settings
-│   └── application.properties.example  # Template for database configuration
+│   ├── application.properties    # Database connection settings (written by setup-aurora-cdk.sh)
+│   ├── application.properties.example  # Template for database configuration
+│   └── logback.xml               # Logging configuration
 ├── config_templates/             # Configuration templates for each demo step
 │   ├── standard-jdbc/           # Current state (standard PostgreSQL JDBC)
 │   ├── aws-jdbc-wrapper/        # Step 2: AWS JDBC wrapper migration
