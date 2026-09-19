@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Demo application output: keep INFO so the WRITER/READER routing lines stay visible. -->
+    <logger name="com.example" level="INFO"/>
+
+    <!--
+      AWS SDK. At DEBUG, Aws4Signer prints the full canonical request, which includes
+      X-Amz-Security-Token and the complete presigned RDS auth token - a live credential.
+      AwsCredentialsProviderChain also logs a stack trace for every provider it tries
+      before reaching the EC2 instance profile, which is expected and not a failure.
+    -->
+    <logger name="software.amazon.awssdk" level="WARN"/>
+    <logger name="software.amazon.awssdk.auth.signer.Aws4Signer" level="WARN"/>
+    <logger name="software.amazon.awssdk.auth.credentials" level="WARN"/>
+
+    <!-- HikariCP. At DEBUG this dumps the whole pool configuration and PropertyElf noise. -->
+    <logger name="com.zaxxer.hikari" level="INFO"/>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

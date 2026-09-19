@@ -1,19 +1,20 @@
 #!/bin/bash
 
 # AWS JDBC Wrapper Demo Script
-# Usage: ./demo.sh [standard-jdbc|aws-jdbc-wrapper|read-write-splitting]
+# Usage: ./demo.sh [standard-jdbc|aws-jdbc-wrapper|read-write-splitting|iam-auth]
 
 set -e
 
 DEMO_STEP="${1}"
 
 if [ -z "${DEMO_STEP}" ]; then
-    echo "Usage: ./demo.sh [standard-jdbc|aws-jdbc-wrapper|read-write-splitting]"
+    echo "Usage: ./demo.sh [standard-jdbc|aws-jdbc-wrapper|read-write-splitting|iam-auth]"
     echo ""
     echo "Available steps:"
     echo "  standard-jdbc        - Reset to standard PostgreSQL JDBC (baseline)"
     echo "  aws-jdbc-wrapper     - Migrate from standard JDBC to AWS JDBC Wrapper"
     echo "  read-write-splitting - Enable read/write splitting for optimal performance"
+    echo "  iam-auth             - Replace the database password with IAM authentication"
     exit 1
 fi
 
@@ -85,9 +86,41 @@ case "${DEMO_STEP}" in
         ./gradlew clean run
         ;;
         
+    "iam-auth")
+        echo "=== Enable IAM Database Authentication ==="
+        echo "Replacing the database password with an IAM authentication token..."
+
+        # The IAM database user is created manually and named in application.properties.
+        # Fail early with a clear message instead of a stack trace from DatabaseConfig.
+        if ! grep -q '^db\.iam\.username=' src/main/resources/application.properties; then
+            echo ""
+            echo "ERROR: db.iam.username is not set in src/main/resources/application.properties"
+            echo "       Add the PostgreSQL role you granted rds_iam, for example:"
+            echo "         db.iam.username=db_iam_user"
+            echo "       See the Stage 4: IAM Database Authentication section in the README."
+            exit 1
+        fi
+
+        # Keep Stage 3 read/write routing and add the IAM authentication plugin.
+        cp config_templates/iam-auth/build.gradle .
+        cp config_templates/iam-auth/DatabaseConfig.java src/main/java/com/example/config/
+        cp config_templates/read-write-splitting/OrderDAO.java src/main/java/com/example/dao/
+
+        # IAM authentication uses the AWS JDBC Wrapper URL.
+        sed -i 's|^db\.url=jdbc:postgresql:|db.url=jdbc:aws-wrapper:postgresql:|' src/main/resources/application.properties
+
+        echo "Configuration updated:"
+        echo "   - IAM Authentication plugin enabled"
+        echo "   - Database password is no longer used"
+        echo "   - Read/Write Splitting and failover remain enabled"
+        echo ""
+        echo "Running application..."
+        ./gradlew clean run
+        ;;
+
     *)
         echo "ERROR: Invalid step: ${DEMO_STEP}"
-        echo "Valid options: standard-jdbc, aws-jdbc-wrapper, read-write-splitting"
+        echo "Valid options: standard-jdbc, aws-jdbc-wrapper, read-write-splitting, iam-auth"
         exit 1
         ;;
 esac
@@ -104,7 +137,10 @@ case "${DEMO_STEP}" in
         echo "  Run: ./demo.sh read-write-splitting"
         ;;
     "read-write-splitting")
-        echo "  Demo complete! Check the logs to see read/write splitting in action."
+        echo "  Run: ./demo.sh iam-auth"
+        ;;
+    "iam-auth")
+        echo "  Demo complete! Check the logs to verify IAM authentication and read/write routing."
         echo "  To reset: ./demo.sh standard-jdbc"
         ;;
 esac
