@@ -1,0 +1,45 @@
+AD FS IAM identity provider setup (CDK)
+========================================
+Using configuration from <REPOSITORY_PATH>/infrastructure/identity_providers/adfs/.env
+Account: <AWS_ACCOUNT_ID>   Region: us-east-1
+Federation metadata: <REPOSITORY_PATH>/infrastructure/identity_providers/adfs/adfs_metadata/metadata.xml
+Discovering the Aurora cluster resource id from stack 'aws-jdbc-driver-stack'...
+Aurora cluster resource id: <CLUSTER_RESOURCE_ID>
+
+Will create:
+  SAML provider : ADFS
+  IAM role      : ADFS-JDBCDemo  (rds-db:connect on <CLUSTER_RESOURCE_ID>/db_iam_user)
+
+Compiling CDK app...
+Checking CDK bootstrap...
+Deploying the IAM identity provider...
+
+✨  Synthesis time: 6.14s
+
+adfs-iam-identity-provider: start: Building adfs-iam-identity-provider Template
+adfs-iam-identity-provider: success: Built adfs-iam-identity-provider Template
+adfs-iam-identity-provider: start: Publishing adfs-iam-identity-provider Template (<AWS_ACCOUNT_ID>-us-east-1-<ASSET_ID>)
+adfs-iam-identity-provider: success: Published adfs-iam-identity-provider Template (<AWS_ACCOUNT_ID>-us-east-1-<ASSET_ID>)
+adfs-iam-identity-provider: creating CloudFormation changeset...
+adfs-iam-identity-provider: deploying... [1/1]
+
+✅  adfs-iam-identity-provider
+
+✨  Deployment time: 45.82s
+
+Outputs:
+adfs-iam-identity-provider.FederatedRoleArn = arn:aws:iam::<AWS_ACCOUNT_ID>:role/ADFS-JDBCDemo
+adfs-iam-identity-provider.SamlProviderArn = arn:aws:iam::<AWS_ACCOUNT_ID>:saml-provider/ADFS
+
+Stack ARN:
+arn:aws:cloudformation:us-east-1:<AWS_ACCOUNT_ID>:stack/adfs-iam-identity-provider/<STACK_ID>
+
+✨  Total time: 58.14s
+
+****************************************************
+*** Newer version of CDK is available [2.1143.0] ***
+*** Upgrade recommended (npm install -g aws-cdk) ***
+****************************************************
+
+Done. Outputs above include SamlProviderArn and FederatedRoleArn - use them as
+iam.idp.arn and iam.role.arn in the JDBC federatedAuth stage.

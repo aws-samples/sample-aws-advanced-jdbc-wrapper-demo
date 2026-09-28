@@ -1,0 +1,77 @@
+PS C:\Windows\system32> .\setup-adfs.ps1 -AwsAccountId "<AWS_ACCOUNT_ID>" -SamlProviderName "ADFS"
+
+=== 1. Domain controller check ===
+  [done] Domain controller in corp.example.com
+  [done] Using domain corp.example.com (federation service adfs.corp.example.com)
+  [done] Using domain controller private IP <DC_PRIVATE_IP>
+
+=== 2. Demo user ===
+Password for new AD user 'bob': ********
+  [done] Created user bob
+
+=== 3. AWS group + membership ===
+  [done] Created group AWS-JDBCDemo
+  [done] Added bob to AWS-JDBCDemo
+
+=== 4. AD FS service account ===
+Password for new AD FS service account 'adfssvc': ********
+  [done] Created service account adfssvc
+
+=== 5. DNS record for adfs.<domain> ===
+  [done] Created A record adfs.corp.example.com -> <DC_PRIVATE_IP>
+
+=== 6. DNS forwarder for external AWS hostnames ===
+  [done] Added DNS forwarder 169.254.169.253
+
+=== 7. Install AD FS feature ===
+WARNING: To finish configuring this server for the federation server role using Windows PowerShell, see
+http://go.microsoft.com/fwlink/?LinkId=224868.
+  [done] Installed AD FS feature
+
+=== 8. AD FS farm ===
+  [done] Created self-signed cert <CERTIFICATE_THUMBPRINT>
+WARNING: A machine restart is required to complete ADFS service configuration. For more information, see:
+https://go.microsoft.com/fwlink/?LinkId=798725
+WARNING: The SSL certificate subject alternative names do not support host name 'certauth.adfs.corp.example.com'.
+Configuring certificate authentication binding on port '49443' and hostname 'adfs.corp.example.com'.
+WARNING: The SSL certificate does not contain all UPN suffix values that exist in the enterprise.  Users with UPN
+suffix values not represented in the certificate will not be able to Workplace-Join their devices.  For more
+information, see http://go.microsoft.com/fwlink/?LinkId=311954.
+  [done] Created AD FS farm for adfs.corp.example.com
+
+[restart] Windows reported that a restart was required. Restart the server, reconnect, and
+run the same setup command again. Completed steps 1-8 from the rerun are omitted below.
+
+=== 9. Forms authentication ===
+  [skip] Forms authentication already enabled
+
+=== 10. IdP-initiated sign-on page ===
+  [done] Enabled IdP-initiated sign-on page (for browser verification)
+
+=== 11. AWS relying-party trust and claim rules ===
+  [done] Created AWS relying-party trust with 4 claim rules
+
+=== 12. Export federation metadata ===
+  [done] Wrote federation metadata to C:\Users\Administrator\Desktop\FederationMetadata.xml
+
+=== 13. Verify AD FS is reachable ===
+  [done] adfs.corp.example.com is listening on TCP 443
+
+=== AD FS setup complete ===
+Federation metadata : C:\Users\Administrator\Desktop\FederationMetadata.xml
+IAM SAML provider   : arn:aws:iam::<AWS_ACCOUNT_ID>:saml-provider/ADFS
+IAM role from claims : arn:aws:iam::<AWS_ACCOUNT_ID>:role/ADFS-JDBCDemo
+
+Verify in a browser (optional but proves federation end to end):
+  https://adfs.corp.example.com/adfs/ls/IdpInitiatedSignOn.aspx?loginToRp=urn:amazon:webservices
+  Sign in as bob@corp.example.com. Reaching the AWS console URL = success.
+  (Self-signed cert: expect a certificate warning; continue past it.)
+
+Next (AWS side, not this script):
+  1. Create the IAM SAML provider 'ADFS' from the metadata file above.
+  2. Create IAM role ADFS-JDBCDemo (AssumeRoleWithSAML trust + rds-db:connect).
+  3. Create the Aurora IAM database user, then configure the JDBC federatedAuth stage.
+
+Message                                   Context              Status
+-------                                   -------              ------
+The configuration completed successfully. DeploymentSucceeded Success

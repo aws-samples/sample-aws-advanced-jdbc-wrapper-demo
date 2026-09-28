@@ -6,6 +6,16 @@ db.url=jdbc:postgresql://aurora-jdbc-demo.cluster-abc123.us-east-1.rds.amazonaws
 # The password itself is read from the DB_PASSWORD environment variable, never from this file.
 db.username=postgres
 
-# IAM database authentication (Stage 4): the PostgreSQL role granted rds_iam.
+# IAM database authentication (Stages 4-5): the PostgreSQL role granted rds_iam.
 # Create this role in the database first - see the Stage 4 section in the README.
 db.iam.username=db_iam_user
+
+# AD FS authentication (Stage 5): AD FS and AWS SAML settings.
+# Copy these entries to application.properties, uncomment them, and replace the placeholders.
+# idp.endpoint=adfs.example.com
+# idp.username=user@example.com
+# The AD FS password is read from the IDP_PASSWORD environment variable, never from this file.
+# sslInsecure=false
+# iam.role.arn=arn:aws:iam::123456789012:role/ADFS-JDBCDemo
+# iam.idp.arn=arn:aws:iam::123456789012:saml-provider/ADFS
+# iam.region=us-east-1

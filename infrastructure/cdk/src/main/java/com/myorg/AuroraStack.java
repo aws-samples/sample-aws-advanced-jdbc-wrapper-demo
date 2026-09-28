@@ -60,11 +60,11 @@ public class AuroraStack extends Stack {
                     .allowAllOutbound(true)
                     .build();
 
-            // Allow inbound PostgreSQL connections on port 5432
+            // Allow PostgreSQL only from clients with a route inside this VPC.
             securityGroup.addIngressRule(
-                    Peer.anyIpv4(),
+                    Peer.ipv4(vpc.getVpcCidrBlock()),
                     Port.tcp(5432),
-                    "Allow PostgreSQL connections"
+                    "Allow PostgreSQL connections from within the VPC"
             );
         }
 
@@ -111,14 +111,17 @@ public class AuroraStack extends Stack {
                 .serverlessV2MaxCapacity(2.0)
                 .writer(ClusterInstance.serverlessV2("writer", ServerlessV2ClusterInstanceProps.builder()
                         .instanceIdentifier("aws-jdbc-driver-stack-" + clusterId + "-writer")
+                        .publiclyAccessible(false)
                         .build()))
                 .readers(Arrays.<IClusterInstance>asList(
                         ClusterInstance.serverlessV2("reader1", ServerlessV2ClusterInstanceProps.builder()
                                 .instanceIdentifier("aws-jdbc-driver-stack-" + clusterId + "-reader-1")
+                                .publiclyAccessible(false)
                                 .scaleWithWriter(true)
                                 .build()),
                         ClusterInstance.serverlessV2("reader2", ServerlessV2ClusterInstanceProps.builder()
                                 .instanceIdentifier("aws-jdbc-driver-stack-" + clusterId + "-reader-2")
+                                .publiclyAccessible(false)
                                 .build())
                 ))
                 .deletionProtection(false)
