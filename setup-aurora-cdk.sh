@@ -84,14 +84,23 @@ fi
 echo "📦 Installing Java dependencies..."
 mvn compile
 
-# Bootstrap CDK (if needed)
+# Require a separately bootstrapped environment. Bootstrapping is an administrative action
+# and should not use the normal deployment identity.
 echo "🔄 Checking CDK bootstrap status..."
 if ! aws cloudformation describe-stacks --stack-name CDKToolkit --region "$CDK_DEFAULT_REGION" &>/dev/null; then
-    echo "   🚀 Bootstrapping CDK (first time setup)..."
-    cdk bootstrap
-else
-    echo "   ✅ CDK already bootstrapped"
+    echo "❌ ERROR: CDK is not bootstrapped in account $CDK_DEFAULT_ACCOUNT, region $CDK_DEFAULT_REGION."
+    echo ""
+    echo "Ask an AWS administrator to bootstrap this environment with an organization-approved"
+    echo "CloudFormation execution policy before retrying:"
+    echo "  cdk bootstrap aws://$CDK_DEFAULT_ACCOUNT/$CDK_DEFAULT_REGION \\"
+    echo "    --cloudformation-execution-policies <CLOUDFORMATION_EXECUTION_POLICY_ARN>"
+    echo ""
+    echo "A plain cdk bootstrap uses AdministratorAccess by default and should not be used for"
+    echo "shared or production environments. This sample expects the default hnb659fds qualifier."
+    echo "See: https://docs.aws.amazon.com/cdk/v2/guide/best-practices-security.html"
+    exit 1
 fi
+echo "   ✅ CDK already bootstrapped"
 
 
 
@@ -132,9 +141,8 @@ echo "Checking CloudFormation stack outputs in region: $CDK_DEFAULT_REGION"
 
 # Debug: Check if stack exists
 if ! aws cloudformation describe-stacks --stack-name "$STACK_NAME" --region "$CDK_DEFAULT_REGION" &>/dev/null; then
-    echo "❌ ERROR: Stack '$STACK_NAME' not found in region '$CDK_DEFAULT_REGION'"
-    echo "Available stacks:"
-    aws cloudformation list-stacks --region "$CDK_DEFAULT_REGION" --query "StackSummaries[?StackStatus!='DELETE_COMPLETE'].StackName" --output table
+    echo "❌ ERROR: Stack '$STACK_NAME' not found in account '$CDK_DEFAULT_ACCOUNT', region '$CDK_DEFAULT_REGION'."
+    echo "Check that your AWS CLI profile and region match the deployment target."
     exit 1
 fi
 

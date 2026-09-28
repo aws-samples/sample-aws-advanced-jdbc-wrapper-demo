@@ -1,5 +1,16 @@
-# CDK context files
-infrastructure/cdk/cdk.context.json
+# CDK context files (hold real account/VPC/subnet ids) - anywhere in the tree
+cdk.context.json
+**/cdk.context.json
+
+# CDK synthesized output - anywhere in the tree
+cdk.out/
+**/cdk.out/
+
+# Internal security tooling state and scan output - never publish these
+.protoshield/
+.holmes/
+semantic-review/
+holmes-report-*.json
 
 # Application properties with sensitive data
 src/main/resources/application.properties
@@ -13,6 +24,10 @@ build/resources/main/application.properties
 .env
 .env.local
 .env.*.local
+
+# Generated AD FS federation metadata (environment-specific)
+infrastructure/identity_providers/adfs/adfs_metadata/
+infrastructure/identity_providers/adfs/scripts/FederationMetadata.xml
 
 # AWS credentials
 .aws/

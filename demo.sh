@@ -1,20 +1,21 @@
 #!/bin/bash
 
 # AWS JDBC Wrapper Demo Script
-# Usage: ./demo.sh [standard-jdbc|aws-jdbc-wrapper|read-write-splitting|iam-auth]
+# Usage: ./demo.sh [standard-jdbc|aws-jdbc-wrapper|read-write-splitting|iam-auth|adfs-auth]
 
 set -e
 
 DEMO_STEP="${1}"
 
 if [ -z "${DEMO_STEP}" ]; then
-    echo "Usage: ./demo.sh [standard-jdbc|aws-jdbc-wrapper|read-write-splitting|iam-auth]"
+    echo "Usage: ./demo.sh [standard-jdbc|aws-jdbc-wrapper|read-write-splitting|iam-auth|adfs-auth]"
     echo ""
     echo "Available steps:"
     echo "  standard-jdbc        - Reset to standard PostgreSQL JDBC (baseline)"
     echo "  aws-jdbc-wrapper     - Migrate from standard JDBC to AWS JDBC Wrapper"
     echo "  read-write-splitting - Enable read/write splitting for optimal performance"
     echo "  iam-auth             - Replace the database password with IAM authentication"
+    echo "  adfs-auth       - Authenticate through AD FS and AWS IAM using SAML"
     exit 1
 fi
 
@@ -118,9 +119,31 @@ case "${DEMO_STEP}" in
         ./gradlew clean run
         ;;
 
+    "adfs-auth")
+        echo "=== Enable Federated Database Authentication ==="
+        echo "Authenticating through AD FS and AWS IAM with SAML..."
+
+        # Keep read/write routing and replace IAM token authentication with federated authentication.
+        cp config_templates/adfs-auth/build.gradle .
+        cp config_templates/adfs-auth/DatabaseConfig.java src/main/java/com/example/config/
+        cp config_templates/read-write-splitting/OrderDAO.java src/main/java/com/example/dao/
+
+        # Federated authentication uses the AWS JDBC Wrapper URL.
+        sed -i 's|^db\.url=jdbc:postgresql:|db.url=jdbc:aws-wrapper:postgresql:|' src/main/resources/application.properties
+
+        echo "Configuration updated:"
+        echo "   - Federated Authentication plugin enabled"
+        echo "   - AD FS SAML authentication and AWS STS role assumption enabled"
+        echo "   - Database password is not used"
+        echo "   - Read/Write Splitting and failover remain enabled"
+        echo ""
+        echo "Running application..."
+        ./gradlew clean run
+        ;;
+
     *)
         echo "ERROR: Invalid step: ${DEMO_STEP}"
-        echo "Valid options: standard-jdbc, aws-jdbc-wrapper, read-write-splitting, iam-auth"
+        echo "Valid options: standard-jdbc, aws-jdbc-wrapper, read-write-splitting, iam-auth, adfs-auth"
         exit 1
         ;;
 esac
@@ -140,7 +163,10 @@ case "${DEMO_STEP}" in
         echo "  Run: ./demo.sh iam-auth"
         ;;
     "iam-auth")
-        echo "  Demo complete! Check the logs to verify IAM authentication and read/write routing."
+        echo "  Run: ./demo.sh adfs-auth"
+        ;;
+    "adfs-auth")
+        echo "  Demo complete! Check the logs to verify federated authentication and read/write routing."
         echo "  To reset: ./demo.sh standard-jdbc"
         ;;
 esac
